@@ -9,10 +9,21 @@ const trimArr = (arr) =>{
     })
 }
 
-router.get('/', (req,res) => {
+const PAGE_SIZE = 9;
+
+router.get('/', async (req,res) => {
+    const page = parseInt(req.query.page || '1') - 1
+    const totalPages = await Series.countDocuments({})
     Series.find()
+        .limit(PAGE_SIZE)
+        .skip(PAGE_SIZE * page)
+        .sort({year:-1})
         .then((series)=>{
-            res.json(series)
+            res.json({
+                page: page + 1,
+                totalPages: Math.ceil(totalPages / PAGE_SIZE),
+                series: series
+            })
         })
         .catch((err)=>{
             res.status(404).json({mess:'сериалы не нaйдены'})
