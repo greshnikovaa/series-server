@@ -13,8 +13,9 @@ const PAGE_SIZE = 9;
 
 router.get('/', async (req,res) => {
     const page = parseInt(req.query.page || '1') - 1
-    const totalPages = await Series.countDocuments({})
-    Series.find()
+    const category = req.query.category === 'all'?{}:{category:req.query.category}
+    const totalPages = await Series.countDocuments(category)
+    Series.find(category)
         .limit(PAGE_SIZE)
         .skip(PAGE_SIZE * page)
         .sort({year:-1})
